@@ -5,7 +5,7 @@
   "main": "dest/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "prepublish": "npm run compile",
+    "prepublish": "npm run compile-and-test",
     "test": "jasmine-node tests",
     "compile": "tsc",
     "compile-and-test": "npm run compile --loglevel=silent && npm test --loglevel=silent",
