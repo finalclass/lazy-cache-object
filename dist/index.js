@@ -44,7 +44,8 @@ var LazyCacheObject = /** @class */ (function () {
     }
     LazyCacheObject.prototype.startCacheInvalidationTimer = function (timeToLiveInMilliseconds) {
         this.ttl = timeToLiveInMilliseconds;
-        this.invalidateInterval = setInterval(this.invalidate.bind(this), this.ttl);
+        var interval = Math.round(this.ttl / 4);
+        this.invalidateInterval = setInterval(this.invalidate.bind(this), interval);
     };
     LazyCacheObject.prototype.stopCacheInvalidationTimer = function () {
         this.ttl = 0;
@@ -79,6 +80,10 @@ var LazyCacheObject = /** @class */ (function () {
                         .then(function (shouldInvalidate) {
                         if (shouldInvalidate) {
                             delete _this.data[key];
+                        }
+                        else {
+                            // to prevent running shouldInvalidate all the time
+                            _this.data[key].createdAt = Date.now();
                         }
                     })
                         .catch(function (err) {

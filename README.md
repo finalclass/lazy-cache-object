@@ -13,7 +13,7 @@ Lazy Cache Object
 const lazyCacheObject = new LazyCacheObject({
     initKey(key) {
         // do some ASYNC work and return a Promise
-        // this function will be called every time there will be request for that key
+        // this function will be called every time there will be request for the key
         // and cache will be empty
         return asyncPromiseReturn()
     },
@@ -22,12 +22,12 @@ const lazyCacheObject = new LazyCacheObject({
         // you can decide if you want the cache to be invalidated after TTL
         // you should return a boolean or a promise for a boolean
         // this function will be called every time LazyCacheObject will try
-        // to invalidate the `key`
+        // to invalidate the key.
         return true;
     },
     onError(err) {
         // this one is optional as well
-        // this is called anytime any of your promises will return an error
+        // it's called anytime any of your promises returns an error
         console.error('an error ocured', err);
     }
 });
@@ -48,8 +48,11 @@ You have to manually strt/stop invalidation timer:
 
 ```js
 lazyCacheObject.startCacheInvalidationTimer(60000);
+// takes one argument: timeToLiveInMilliseconds
 // the above method will make LazyCacheObject invalidate old keys every minute
-// (it will not invalidate a key if `shouldInvalidate()` method has returned false for that key)
+// it will not invalidate a key if `shouldInvalidate()` method has returned false for that key
+// it will run a function to check if any of the keys are to be dropped every timeToLiveInMilliseconds / 4 milliseconds
+// so your item can live in the cache for a maximum of 5/4 * timeToLiveInMilliseconds milliseconds
 ```
 
 **REMEMBER** to stop the invalidation timer manually:

@@ -23,7 +23,8 @@ export class LazyCacheObject<T> {
 
     public startCacheInvalidationTimer(timeToLiveInMilliseconds: number) {
         this.ttl = timeToLiveInMilliseconds;
-        this.invalidateInterval = setInterval(this.invalidate.bind(this), this.ttl);
+        const interval = Math.round(this.ttl / 4);
+        this.invalidateInterval = setInterval(this.invalidate.bind(this), interval);
     }
 
     public stopCacheInvalidationTimer() {
@@ -60,6 +61,9 @@ export class LazyCacheObject<T> {
             .then(shouldInvalidate => {
                 if (shouldInvalidate) {
                     delete this.data[key];
+                } else {
+                    // to prevent running shouldInvalidate all the time
+                    this.data[key].createdAt = Date.now();
                 }
             })
             .catch(err => {

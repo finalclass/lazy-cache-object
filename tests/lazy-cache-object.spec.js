@@ -17,7 +17,7 @@ describe('LazyCacheObject', () => {
             expect(result).toBe('OK key');
             next();
         });
-    });
+    })
 
     it('invalidates cache after TTL', next => {
         let nofCalls = 0;
