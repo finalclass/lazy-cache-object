@@ -1,8 +1,8 @@
 {
   "name": "lazy-cache-object",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Object with properties that are evaluated when needed and destroyed after some time.",
-  "main": "dest/index.js",
+  "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
     "prepublish": "npm run compile-and-test",
