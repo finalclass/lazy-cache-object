@@ -6,7 +6,7 @@ export declare class LazyCacheObject<T> {
     constructor(callbacks: {
         initKey: (key: string) => Promise<T>;
         shouldInvalidate?: (key: string, value: T) => Promise<boolean>;
-        onError?: (err) => void;
+        onShouldInvalidateError?: (err) => void;
     });
     startCacheInvalidationTimer(timeToLiveInMilliseconds: number): void;
     stopCacheInvalidationTimer(): void;

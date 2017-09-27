@@ -15,7 +15,7 @@ export class LazyCacheObject<T> {
         private callbacks: {
             initKey: (key: string) => Promise<T>;
             shouldInvalidate?: (key: string, value: T) => Promise<boolean>;
-            onError?: (err) => void;
+            onShouldInvalidateError?: (err) => void;
         }
     ) {
 
@@ -68,8 +68,8 @@ export class LazyCacheObject<T> {
             })
             .catch(err => {
                 delete this.data[key];
-                if (this.callbacks.onError) {
-                    this.callbacks.onError(err);
+                if (this.callbacks.onShouldInvalidateError) {
+                    this.callbacks.onShouldInvalidateError(err);
                 }
             })
             .then(() => this.invalidate(keys));

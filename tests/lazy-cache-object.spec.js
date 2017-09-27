@@ -58,7 +58,7 @@ describe('LazyCacheObject', () => {
             shouldInvalidate(key, value) {
                 return value === 'OK key1';
             },
-            onError(err) {
+            onShouldInvalidateError(err) {
                 console.error('LazyCacheObject error', err);
             }
         });

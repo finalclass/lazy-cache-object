@@ -25,9 +25,9 @@ const lazyCacheObject = new LazyCacheObject({
         // to invalidate the key.
         return true;
     },
-    onError(err) {
+    onShouldInvalidateError(err) {
         // this one is optional as well
-        // it's called anytime any of your promises returns an error
+        // it's called anytime shouldInvalidate throws an error
         console.error('an error ocured', err);
     }
 });

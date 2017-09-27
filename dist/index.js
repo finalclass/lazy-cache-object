@@ -88,8 +88,8 @@ var LazyCacheObject = /** @class */ (function () {
                     })
                         .catch(function (err) {
                         delete _this.data[key];
-                        if (_this.callbacks.onError) {
-                            _this.callbacks.onError(err);
+                        if (_this.callbacks.onShouldInvalidateError) {
+                            _this.callbacks.onShouldInvalidateError(err);
                         }
                     })
                         .then(function () { return _this.invalidate(keys); })];
