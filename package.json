@@ -1,0 +1,40 @@
+{
+  "name": "lazy-cache-object",
+  "version": "1.0.0",
+  "description": "Object with properties that are evaluated when needed and destroyed after some time.",
+  "main": "dest/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "prepublish": "npm run compile",
+    "test": "jasmine-node tests",
+    "compile": "tsc",
+    "compile-and-test": "npm run compile --loglevel=silent && npm test --loglevel=silent",
+    "watch": "watch \"npm run compile-and-test\" src tests"
+  },
+  "engines": {
+    "node": "> 0.12"
+  },
+  "dependencies": {
+    "single-init": "1.1.2"
+  },
+  "devDependencies": {
+    "jasmine-node": "1.14.5",
+    "typescript": "2.5.3",
+    "watch": "1.0.2"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/finalclass/lazy-cache-object.git"
+  },
+  "keywords": [
+    "cache",
+    "lazy",
+    "object"
+  ],
+  "author": "Szymon Wygnanski",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/finalclass/lazy-cache-object/issues"
+  },
+  "homepage": "https://github.com/finalclass/lazy-cache-object#readme"
+}

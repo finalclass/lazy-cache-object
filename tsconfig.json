@@ -1,0 +1,15 @@
+{
+    "compilerOptions": {
+        "rootDir": "src/",
+        "outDir": "dist/",
+        "module": "commonjs",
+        "sourceMap": true,
+        "declaration": true,
+        "target": "es5",
+        "moduleResolution": "node",
+        "lib": [
+            "dom",
+            "es2016"
+        ]
+    }
+}
