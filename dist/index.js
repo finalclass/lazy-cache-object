@@ -55,44 +55,52 @@ var LazyCacheObject = /** @class */ (function () {
         if (keys === void 0) { keys = Object.keys(this.data); }
         return __awaiter(this, void 0, void 0, function () {
             var _this = this;
-            var now, key, cacheItem;
+            var now, key, otherKeys, cacheItem, cacheItemValue, shouldInvalidate, err_1;
             return __generator(this, function (_a) {
-                if (keys.length === 0) {
-                    return [2 /*return*/];
-                }
-                now = Date.now();
-                key = keys.pop();
-                cacheItem = this.data[key];
-                if (!cacheItem) {
-                    return [2 /*return*/, setTimeout(function () { return _this.invalidate(keys); })];
-                }
-                if (now - cacheItem.createdAt < this.ttl) {
-                    return [2 /*return*/, setTimeout(function () { return _this.invalidate(keys); })];
-                }
-                if (!this.callbacks.shouldInvalidate) {
-                    delete this.data[key];
-                    return [2 /*return*/, setTimeout(function () { return _this.invalidate(keys); })];
-                }
-                return [2 /*return*/, cacheItem.singleInit.get()
-                        .then(function (cacheItemValue) {
-                        return Promise.resolve(_this.callbacks.shouldInvalidate(key, cacheItemValue));
-                    })
-                        .then(function (shouldInvalidate) {
+                switch (_a.label) {
+                    case 0:
+                        if (keys.length === 0) {
+                            return [2 /*return*/];
+                        }
+                        now = Date.now();
+                        key = keys[0], otherKeys = keys.slice(1);
+                        cacheItem = this.data[key];
+                        if (!cacheItem) {
+                            return [2 /*return*/, setTimeout(function () { return _this.invalidate(otherKeys); })];
+                        }
+                        if (now - cacheItem.createdAt < this.ttl) {
+                            return [2 /*return*/, setTimeout(function () { return _this.invalidate(otherKeys); })];
+                        }
+                        if (!this.callbacks.shouldInvalidate) {
+                            delete this.data[key];
+                            return [2 /*return*/, setTimeout(function () { return _this.invalidate(otherKeys); })];
+                        }
+                        _a.label = 1;
+                    case 1:
+                        _a.trys.push([1, 4, , 5]);
+                        return [4 /*yield*/, cacheItem.singleInit.get()];
+                    case 2:
+                        cacheItemValue = _a.sent();
+                        return [4 /*yield*/, Promise.resolve(this.callbacks.shouldInvalidate(key, cacheItemValue))];
+                    case 3:
+                        shouldInvalidate = _a.sent();
                         if (shouldInvalidate) {
-                            delete _this.data[key];
+                            delete this.data[key];
                         }
                         else {
                             // to prevent running shouldInvalidate all the time
-                            _this.data[key].createdAt = Date.now();
+                            this.data[key].createdAt = Date.now();
                         }
-                    })
-                        .catch(function (err) {
-                        delete _this.data[key];
-                        if (_this.callbacks.onShouldInvalidateError) {
-                            _this.callbacks.onShouldInvalidateError(err);
+                        return [3 /*break*/, 5];
+                    case 4:
+                        err_1 = _a.sent();
+                        delete this.data[key];
+                        if (this.callbacks.onShouldInvalidateError) {
+                            this.callbacks.onShouldInvalidateError(err_1);
                         }
-                    })
-                        .then(function () { return _this.invalidate(keys); })];
+                        return [3 /*break*/, 5];
+                    case 5: return [2 /*return*/, this.invalidate(otherKeys)];
+                }
             });
         });
     };

@@ -49,7 +49,10 @@ describe('LazyCacheObject', () => {
     });
 
     it('has conditional invalidation feature', next => {
-        let callsPerCall = {key1: 0, key2: 0};
+        let callsPerCall = {
+            key1: 0,
+            key2: 0
+        };
         const lazyCacheObject = new LazyCacheObject({
             initKey(key) {
                 callsPerCall[key] += 1;
@@ -64,10 +67,10 @@ describe('LazyCacheObject', () => {
         });
 
         lazyCacheObject.startCacheInvalidationTimer(100);
-        Promise.all([
-            lazyCacheObject.get('key1'),
-            lazyCacheObject.get('key2'),
-        ])
+        return Promise.all([
+                lazyCacheObject.get('key1'),
+                lazyCacheObject.get('key2'),
+            ])
             .then(([r1, r2]) => {
                 expect(r1).toBe('OK key1');
                 expect(r2).toBe('OK key2');
@@ -81,6 +84,49 @@ describe('LazyCacheObject', () => {
                 expect(callsPerCall.key1).toBe(2);
                 expect(callsPerCall.key2).toBe(1);
                 lazyCacheObject.stopCacheInvalidationTimer();
+                next();
+            });
+    });
+
+    it('does invalide without problems', next => {
+        const lazyCacheObject = new LazyCacheObject({
+            initKey(key) {
+                return 'OK ' + key;
+            },
+            shouldInvalidate(key, value) {
+                return true;
+            },
+            onShouldInvalidateError(err) {
+                console.error('LazyCacheObject error', err);
+            }
+        });
+
+        lazyCacheObject.startCacheInvalidationTimer(10);
+
+        function createSome(num) {
+
+            let promises = [];
+            for (let i = 0; i < 2000; i += 1) {
+                promises.push(lazyCacheObject.get(i));
+            }
+
+            return Promise.all(promises);
+        }
+
+        const errSpy = createSpy();
+
+        return createSome(2000)
+            .then(() => wait(100))
+            .then(() => createSome(2000))
+            .then(() => wait(50))
+             .then(() => createSome(5000))
+            .then(() => wait(200))
+            .catch(err => {
+                console.log('error', err);
+                errSpy();
+            })
+            .then(() => {
+                expect(errSpy).not.toHaveBeenCalled();
                 next();
             });
     });

@@ -17,9 +17,7 @@ export class LazyCacheObject<T> {
             shouldInvalidate?: (key: string, value: T) => Promise<boolean>;
             onShouldInvalidateError?: (err) => void;
         }
-    ) {
-
-    }
+    ) {}
 
     public startCacheInvalidationTimer(timeToLiveInMilliseconds: number) {
         this.ttl = timeToLiveInMilliseconds;
@@ -38,41 +36,39 @@ export class LazyCacheObject<T> {
         }
 
         const now = Date.now();
-        const key = keys.pop();
+        const [key, ...otherKeys] = keys;
         const cacheItem = this.data[key];
 
         if (!cacheItem) {
-            return setTimeout(() => this.invalidate(keys));
+            return setTimeout(() => this.invalidate(otherKeys));
 
         }
         if (now - cacheItem.createdAt < this.ttl) {
-            return setTimeout(() => this.invalidate(keys));
+            return setTimeout(() => this.invalidate(otherKeys));
         }
 
         if (!this.callbacks.shouldInvalidate) {
             delete this.data[key];
-            return setTimeout(() => this.invalidate(keys));
+            return setTimeout(() => this.invalidate(otherKeys));
         }
 
-        return cacheItem.singleInit.get()
-            .then(cacheItemValue => {
-                return Promise.resolve(this.callbacks.shouldInvalidate(key, cacheItemValue))
-            })
-            .then(shouldInvalidate => {
-                if (shouldInvalidate) {
-                    delete this.data[key];
-                } else {
-                    // to prevent running shouldInvalidate all the time
-                    this.data[key].createdAt = Date.now();
-                }
-            })
-            .catch(err => {
+        try {
+            const cacheItemValue = await cacheItem.singleInit.get();
+            const shouldInvalidate = await Promise.resolve(this.callbacks.shouldInvalidate(key, cacheItemValue));
+
+            if (shouldInvalidate) {
                 delete this.data[key];
-                if (this.callbacks.onShouldInvalidateError) {
-                    this.callbacks.onShouldInvalidateError(err);
-                }
-            })
-            .then(() => this.invalidate(keys));
+            } else {
+                // to prevent running shouldInvalidate all the time
+                this.data[key].createdAt = Date.now();
+            }
+        } catch (err) {
+            delete this.data[key];
+            if (this.callbacks.onShouldInvalidateError) {
+                this.callbacks.onShouldInvalidateError(err);
+            }
+        }
+        return this.invalidate(otherKeys);
     }
 
     public async get(key) {
