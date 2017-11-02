@@ -126,6 +126,7 @@ describe('LazyCacheObject', () => {
                 errSpy();
             })
             .then(() => {
+                lazyCacheObject.stopCacheInvalidationTimer();
                 expect(errSpy).not.toHaveBeenCalled();
                 next();
             });
